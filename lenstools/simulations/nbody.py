@@ -737,6 +737,13 @@ class NbodySnapshot(object):
 		#If this task is not the master, we can return now
 		if (self.pool is not None) and not(self.pool.is_master()):
 			return (None,)*3
+		print("NORMALIZATION, divide by num particles:")
+		print(self._header["num_particles_total"])
+		print("divide by box size^3, binres0, binres1, binres2:")
+		print(self._header["box_size"]**3)
+		print(bin_resolution[0])
+		print(bin_resolution[1])
+		print(bin_resolution[2])
 
 		#Normalize the density to the density fluctuation
 		density_projected /= self._header["num_particles_total"]
