@@ -746,8 +746,13 @@ class NbodySnapshot(object):
 		print(bin_resolution[2])
 
 		#Normalize the density to the density fluctuation
-		density_projected /= self._header["num_particles_total"]
-		density_projected *= (self._header["box_size"]**3 / (bin_resolution[0]*bin_resolution[1]*bin_resolution[2])).decompose().value
+		if self._header["num_particles_total"]<512**3:
+			print("adjust density normalization")
+			density_projected /= (512**3)
+			density_projected *= (self._header["box_size"]**3 / (bin_resolution[0]*bin_resolution[1]*bin_resolution[2])).decompose().value
+		else:
+			density_projected /= self._header["num_particles_total"]
+			density_projected *= (self._header["box_size"]**3 / (bin_resolution[0]*bin_resolution[1]*bin_resolution[2])).decompose().value
 
 		#################################################################################################################################
 		######################################Ready to solve poisson equation via FFTs###################################################
