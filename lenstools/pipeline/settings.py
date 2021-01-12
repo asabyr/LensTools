@@ -230,8 +230,8 @@ class PlaneSettings(LTSettings):
 
 		try:
 			settings.smooth = options.getint(section,"smooth")
-		except ValueError:
-			settings.smooth = options.get(section,"smooth")
+		except (NoOptionError, ValueError):
+			settings.smooth = None
 
 		try:
 			settings.kind = options.get(section,"kind")
