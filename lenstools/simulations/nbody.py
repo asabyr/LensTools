@@ -759,7 +759,8 @@ class NbodySnapshot(object):
 		#################################################################################################################################
 
 		bin_resolution.pop(normal)
-
+		print("SMOOTH=")
+		print(smooth)
 		#If smoothing is enabled or potential calculations are needed, we need to FFT the density field
 		if (smooth is not None) or kind=="potential":
 
