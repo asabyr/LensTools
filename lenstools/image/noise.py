@@ -100,6 +100,39 @@ class GaussianNoiseGenerator(object):
 		#Build the ConvergenceMap object
 		return ConvergenceMap(noise_map,self.side_angle)
 
+	def getShapeNoise_ellip(self,ngal=15.0*u.arcmin**-2,sigma_e=0.4,seed=0):
+		
+		"""
+			This method generates a white, gaussian shape noise map for the given intrinsic ellipticity.
+			
+			
+			:param ngal: assumed angular number density of galaxies (must have units of angle^-2)
+			:type ngal: float.
+			
+			:param sigma_e: intrinsic ellipticity of galaxies
+			:type e: float.
+			
+			:param seed: seed of the random generator
+			:type seed: int.
+			
+			:returns: instance of the same exact shape as the one used as blueprint
+			:rtype: :py:class:`~lenstools.image.convergence.ConvergenceMap`
+			
+			"""
+		
+		#Sanity check
+		assert (ngal.unit**-0.5).physical_type=="angle"
+		
+		#Compute shape noise amplitude
+		pixel_angular_side = self.side_angle / self.shape[0]
+		sigma = (sigma_e / (np.sqrt(2)*pixel_angular_side * np.sqrt(ngal))).decompose().value
+		
+		#Generate shape noise
+		np.random.seed(seed)
+		noise_map = np.random.normal(loc=0.0,scale=sigma,size=self.shape)
+		
+		#Build the ConvergenceMap object
+		return ConvergenceMap(noise_map,self.side_angle)
 
 	def _fourierMap(self,power_func,**kwargs):
 
