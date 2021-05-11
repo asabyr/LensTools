@@ -1349,7 +1349,7 @@ class RayTracer(object):
 		:returns: convergence values at each of the initial positions
 
 		"""
-
+                print("Doing Born Approximation")
 		#Sanity check
 		assert initial_positions.ndim>=2 and initial_positions.shape[0]==2,"initial positions shape must be (2,...)!"
 		assert type(initial_positions)==quantity.Quantity and initial_positions.unit.physical_type=="angle"
