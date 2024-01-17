@@ -13,7 +13,13 @@ from .utils.configuration import configuration
 
 from .catalog import Catalog,ShearCatalog,FlexionCatalog,MockCatalog 
 from .image.convergence import ConvergenceMap,OmegaMap,Mask,CMBTemperatureMap
+
+################ additions Alina #################
 from .image.map_stats import MapStats
+from .image.noise_general import GaussianNoise
+from .image.map_utils import MapUtils
+##################################################
+
 from .image.shear import ShearMap
 from .image.flexion import FlexionMap
 from .image.noise import GaussianNoiseGenerator
