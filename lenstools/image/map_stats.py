@@ -1,5 +1,5 @@
 from __future__ import division
-from lenstools.extern import _topology
+#from lenstools.extern import _topology
 from lenstools.utils.fft import NUMPYFFTPack
 import numpy as np
 import scipy
