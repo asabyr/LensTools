@@ -1,5 +1,5 @@
 from __future__ import division
-#from lenstools.extern import _topology
+from lenstools.extern import _topology
 from lenstools.utils.fft import NUMPYFFTPack
 import numpy as np
 import scipy
@@ -301,7 +301,7 @@ class MapStats():
 
     return pdf_dict
 
-  def moments(self,connected=False,dimensionless=False):
+  def nine_moments(self,connected=False,dimensionless=False):
     """
     Measures the first nine moments of the convergence map 
     (two quadratic, three cubic and four quartic)
@@ -363,8 +363,18 @@ class MapStats():
       sigma1 /= sigma1
 
     #Return the array
-    return np.array([sigma0,sigma1,S0,S1,S2,K0,K1,K2,K3])
+    moments_dict={}
+    moments_dict['sigma0']=sigma0
+    moments_dict['sigma1']=sigma1
+    moments_dict['S0']=S0
+    moments_dict['S1']=S1
+    moments_dict['S2']=S2
+    moments_dict['K0']=K0
+    moments_dict['K1']=K1
+    moments_dict['K2']=K2
+    moments_dict['K3']=K3
 
+    return moments_dict
 
   def countMinima(self,thresholds, offset=1):
     """

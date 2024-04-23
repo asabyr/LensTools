@@ -16,7 +16,7 @@ from .image.convergence import ConvergenceMap,OmegaMap,Mask,CMBTemperatureMap
 
 ################ additions Alina #################
 from .image.map_stats import MapStats
-from .image.noise_general import GaussianNoise
+#from .image.noise_general import GaussianNoise
 from .image.map_utils import MapUtils
 ##################################################
 
