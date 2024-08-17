@@ -326,8 +326,8 @@ class MapStats():
     self.hessian()
     
     #Quadratic moments
-    sigma0 = self.np_data.std()
-    sigma1 = np.sqrt((self.gradient_x**2 + self.gradient_y**2).mean())
+    sigma0 = (self.np_data**2).mean()
+    sigma1 = (self.gradient_x**2 + self.gradient_y**2).mean()
 
     #Cubic moments
     S0 = (self.np_data**3).mean()
