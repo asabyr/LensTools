@@ -23,14 +23,8 @@ fftengine = NUMPYFFTPack()
 
 from scipy import interpolate
 
-#Units
+#Units 
 import astropy.units as u
-
-import os
-import sys
-
-this_dir=os.path.dirname(os.path.abspath(__file__))
-NOISE_DIR=this_dir.replace("image","data")
 
 ########################################################
 ########GaussianNoiseGenerator class####################
@@ -47,7 +41,7 @@ class GaussianNoiseGenerator(object):
 
 		#Sanity check
 		assert side_angle.unit.physical_type=="angle"
-
+		
 		self.shape = shape
 		self.side_angle = side_angle
 
@@ -94,14 +88,14 @@ class GaussianNoiseGenerator(object):
 
 		#Sanity check
 		assert (ngal.unit**-0.5).physical_type=="angle"
-
+		
 		#Compute shape noise amplitude
 		pixel_angular_side = self.side_angle / self.shape[0]
 		sigma = ((0.15 + 0.035*z) / (pixel_angular_side * np.sqrt(ngal))).decompose().value
 
 		#Generate shape noise
 		np.random.seed(seed)
-		noise_map = np.random.normal(loc=0.0,scale=sigma,size=self.shape)
+		noise_map = np.random.normal(loc=0.0,scale=sigma,size=self.shape) 
 
 		#Build the ConvergenceMap object
 		return ConvergenceMap(noise_map,self.side_angle)
@@ -117,9 +111,9 @@ class GaussianNoiseGenerator(object):
 		#Compute the multipole moment of each FFT pixel
 		l = np.sqrt(lx[np.newaxis,:]**2 + ly[:,np.newaxis]**2)
 
-		#Compute the power spectrum at each l and check that it is positive
+		#Compute the power spectrum at each l and check that it is positive 
 		if isinstance(power_func,np.ndarray):
-
+			
 			#Check for correct shape
 			assert power_func.shape[0] == 2,"If you want an interpolated power spectrum you should pass a (l,Pl) array!"
 
@@ -129,9 +123,9 @@ class GaussianNoiseGenerator(object):
 			Pl = power_interp(l)
 
 		else:
-
+			
 			Pl = power_func(l,**kwargs)
-
+		
 
 		assert Pl[Pl>=0.0].size == Pl.size
 
@@ -152,9 +146,9 @@ class GaussianNoiseGenerator(object):
 		This method uses a supplied power spectrum to generate correlated noise maps in real space via FFTs
 
 		:param power_func: function that given a numpy array of l's returns a numpy array with the according Pl's (this is the input power spectrum); alternatively you can pass an array (l,Pl) and the power spectrum will be calculated with scipy's interpolation routines
-		:type power_func: function with the above specifications, or numpy array (l,Pl) of shape (2,n)
+		:type power_func: function with the above specifications, or numpy array (l,Pl) of shape (2,n) 
 
-		:param seed: seed of the random generator
+		:param seed: seed of the random generator 
 		:type seed: int.
 
 		:param kwargs: keyword arguments to be passed to power_func, or to the interpolate.interp1d routine
@@ -183,7 +177,7 @@ class GaussianNoiseGenerator(object):
 		"""
 		This method produces CMB white noise temperature maps
 
-		:param sigmaN: rms of the noise. Must be supplied with temperature x angle units
+		:param sigmaN: rms of the noise. Must be supplied with temperature x angle units 
 		:type sigmaN: quantity
 
 		:param seed: seed for the random numbere generator
@@ -212,7 +206,7 @@ class GaussianNoiseGenerator(object):
 		"""
 		This method produces CMB detector noise temperature maps (white noise + beam deconvolution)
 
-		:param sigmaN: rms of the noise. Must be supplied with temperature x angle units
+		:param sigmaN: rms of the noise. Must be supplied with temperature x angle units 
 		:type sigmaN: quantity
 
 		:param fwhm: full width half maximum of the beam
@@ -228,7 +222,7 @@ class GaussianNoiseGenerator(object):
 		:rtype: :py:class:`~lenstools.image.convergence.CMBTemperatureMap`
 
 		"""
-
+		
 		#Initialize random number generator
 		if seed is not None:
 			np.random.seed(seed)
@@ -240,82 +234,7 @@ class GaussianNoiseGenerator(object):
 		#Return
 		return CMBTemperatureMap(noise_map,self.side_angle,unit=u.uK)
 
-	###########################################################################################
-	
-	def fromPowerSpectrum(self,power_func,seed=0,**kwargs):
-		"""
-        This method uses a supplied power spectrum to generate correlated noise maps in real space via FFTs
 
-        :param power_func: function that given a numpy array of l's returns a numpy array with the according Pl's
-		(this is the input power spectrum); alternatively you can pass an array (l,Pl) and
-		the power spectrum will be calculated with scipy's interpolation routines
-		:type power_func: function with the above specifications, or numpy array (l,Pl) of shape (2,n)
 
-        :param seed: seed of the random generator
-        :type seed: int.
 
-        :param kwargs: keyword arguments to be passed to power_func, or to the interpolate.interp1d routine
 
-        :returns: noise image with the same shape as specified when class object is initialized
-        :type: numpy array of floats 
-
-        """
-
-		#Initialize random number generator
-		if seed is not None:
-			np.random.seed(seed)
-
-		#Generate a random Fourier realization and invert it
-		ft_map = self._fourierMap(power_func,**kwargs)
-		noise_map = fftengine.irfft2(ft_map)
-
-		return noise_map
-
-	def tSZ_SOnoise(self, level='baseline', noise_dir=NOISE_DIR,
-				deproj='standardILC',seed=0, **kwargs):
-		
-		"""
-        This method generates a noise map for a tSZ field based on SO post-component noise curves.
-
-        :param level: specify between 'baseline' or 'goal' SO noise
-		:type level: str
-
-		:param noise_dir: directory to noise curves, defaults to /data/ folder in lenstools
-		:type noise_dir: str
-        
-		:param deproj: pick deprojection method 'standardILC','CMBdeproj', 'CIBdeproj' or 'CMBandCIBdeproj'
-		:type deproj: str
-
-		:param seed: seed of the random generator
-        :type seed: int.
-
-        :param kwargs: keyword arguments to be passed to power_func, or to the interpolate.interp1d routine
-       
-		:returns: noise map with the same shape as specified when class object is initialized
-        :type: numpy array of floats 
-
-        """
-
-		if level=='baseline':
-			noise_file="SO_LAT_Nell_T_atmv1_baseline_fsky0p4_ILC_tSZ.txt"
-		elif level=='goal':
-			noise_file="SO_LAT_Nell_T_atmv1_goal_fsky0p4_ILC_tSZ.txt"
-		else:
-			sys.exit("pick baseline or goal SO noise")
-
-		noise_ell_Cl_all=np.loadtxt(os.path.join(noise_dir,noise_file))
-
-		if deproj=='standardILC':
-			column=1
-		elif deproj=='CMBdeproj':
-			column=2
-		elif deproj=='CIBdeproj':
-			column=3
-		elif deproj=='CMBandCIBdeproj':
-			column=4
-		else:
-			sys.exit("pick 'standardILC','CMBdeproj', 'CIBdeproj' or 'CMBandCIBdeproj'")
-
-		noise_ell_Cl=np.vstack((noise_ell_Cl_all[:,0],noise_ell_Cl_all[:,column]))
-
-		return self.fromPowerSpectrum(power_func=noise_ell_Cl,seed=seed,**kwargs)
